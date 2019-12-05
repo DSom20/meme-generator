@@ -75,7 +75,6 @@ input {
 
 .meme-grid {
     width: 100%;
-    padding: 20px;
     display: flex;
     flex-flow: row wrap;
     justify-content: center;
