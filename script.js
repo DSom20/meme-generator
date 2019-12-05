@@ -52,6 +52,8 @@ let mqlScreenWidth580 = window.matchMedia('(max-width: 580px)');
 mqlScreenWidth580.addListener(screenWidth580Test);
 screenWidth580Test(mqlScreenWidth580);
 
+let mqlHover = window.matchMedia('(hover: hover)');
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // PRIMARY EVENT HANDLERS
@@ -95,8 +97,11 @@ function generateMeme(e){
 
     // Give meme container CSS and event listener
     memeContainer.classList.add("meme-container");
-    memeContainer.addEventListener("mouseover", mouseOverHandler);
-    memeContainer.addEventListener("mouseleave", mouseLeaveHandler);
+    if(mqlHover.matches){
+        memeContainer.addEventListener("mouseover", mouseOverHandler);
+        memeContainer.addEventListener("mouseleave", mouseLeaveHandler);
+    }
+
 
     // Add children to meme container
     memeContainer.appendChild(image);
