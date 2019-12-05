@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>DSom Meme Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css?family=Lato|Titillium+Web:900&display=swap" rel="stylesheet">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <section class="section-form">
+        <form action="#">
+            <div class="form-header">
+                <h1>My Favorite Meme Generator</h1>
+                <p>Fill out the form to create the world's best memes!</p>
+            </div>
+            <div class="form-widget">
+                <label for="image-url">Image URL</label>
+                <input type="text" id="image-url" placeholder="Enter image url here" required>
+            </div>
+            <div class="form-widget">
+                <label for="top-text">Text On Top</label>
+                <input type="text" id="top-text" >
+            </div>
+            <div class="form-widget">
+                <label for="bottom-text">Text On Bottom</label>
+                <input type="text" id="bottom-text" >
+            </div>
+            <button type="submit">Add Meme</button>
+        </form>
+    </section>
+    <section class="section-meme">
+        <div class="meme-grid"></div>
+    </section>
+</body>
+</html>

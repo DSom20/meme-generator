@@ -1,0 +1,178 @@
+*, *::before, *::after {
+    margin: 0;
+    box-sizing: border-box;
+}
+
+img {
+    border-radius: 10px;
+    display: block;
+    max-width: 100%;
+}
+
+button {
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.section-form {
+    background-color: #efefef;
+    padding: 20px;
+    text-align: right;
+    font-family: 'Lato', sans-serif;
+}
+
+.form-header {
+    text-align: center;
+    padding-bottom: 20px;
+}
+
+.form-header h1 {
+    font-size: 50px;
+}
+
+form > div {
+    padding-bottom: 20px;
+}
+
+.form-widget {
+    display: flex;
+    text-align: left;
+    align-items: center;
+}
+
+label {
+    flex: 1 0 120px;
+    max-width: 200px;
+}
+
+input {
+    flex: 1 1 200px;
+    border-radius: 5px;
+    line-height: 1.5;
+    padding-left: 5px;
+    border: 1px solid ;
+    border-color: #c4c4c4;
+    font-family: 'Lato', sans-serif;
+}
+
+.section-form button {
+    color: white;
+    background-color: #1E62D0;
+    line-height: 1;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-family: 'Lato', sans-serif;
+}
+
+.section-form button:hover {
+    background-image: linear-gradient(to bottom, #3D94F6, #1E62D0);
+}
+
+.section-form button:active {
+    background-image: linear-gradient(to bottom, #1E62D0, #3D94F6);
+}
+
+.meme-grid {
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.meme-container {
+    position: relative;
+    z-index: 0;
+    margin: 20px;
+    border-radius: 10px;
+    max-width: 100%;
+    font-size: 40px;
+}
+
+.text-container {
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-between;
+    text-align: center;
+    line-height: 1.2;
+    font-family: 'Titillium Web', sans-serif;
+    color: white;
+    text-shadow:
+     /*right  */
+        3px 3px black,
+        3px 2px black,
+        3px 1px black,
+        3px 0 black,
+        3px -1px black,
+        3px -2px black,
+        3px -3px black,
+    /* Left */
+        -3px 3px black,
+        -3px 2px black,
+        -3px 1px black,
+        -3px 0 black,
+        -3px -1px black,
+        -3px -2px black,
+        -3px -3px black;
+    /* Pure top and bottom */
+        /* 0 3px 1px black,
+        0 3px 1px black,
+        0 -3px 1px black,
+        0 -3px 1px black; */
+}
+
+.top-text {
+    padding: 10px 3px 0;
+    width: 100%;
+}
+
+.bottom-text {
+    padding: 40px 3px 10px;
+    width: 100%;
+}
+
+.curtain {
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0,0,0,0.5);
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 10px;
+    cursor: pointer;
+    z-index: 30;
+}
+
+.curtain::after {
+    content: "X";
+    color: lightgray;
+    font-size: 80px;
+    font-family: sans-serif;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%)
+}
+
+
+[data-toggle-visibility="false"] {
+    visibility: hidden;
+}
+
+
+
+/* .......................... Media Queries ................................ */
+
+@media (max-width: 580px) {
+    .form-header h1 {
+        font-size: 30px;
+    }
+}
