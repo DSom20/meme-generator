@@ -37,7 +37,7 @@ let oldWindowWidth = window.innerWidth;
 // PRIMARY EVENT LISTENERS, MEDIA QUERIES
 
 
-form.addEventListener("submit", generateMeme); 
+form.addEventListener("submit", generateMemePart1); 
 document.addEventListener("click", memeClickHandler);  //removes meme OR removes/adds curtain
 
 // Meme-text is NOT inherently part of meme-image, just overlays it. 
@@ -58,63 +58,39 @@ let mqlHover = window.matchMedia('(hover: hover)');
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // PRIMARY EVENT HANDLERS
 
-
-function generateMeme(e){
+// Submit-Event --> Undefined
+// Procedure:
+//   Initiate meme generation, determining whether image provided loads or not.
+//   (Also prevent page from reloading due to default form submit behavoir.)
+function generateMemePart1(e) {
     // Prevent form submission from reloading page
     e.preventDefault();
 
-    // Generate Containers
-    let memeContainer = document.createElement("button");
+    // Create img element and attempt to load src, calling seperate helper functions depending on src load/error
     let image = document.createElement("img");
-    let textContainer = document.createElement("div");
-    let topText = document.createElement("p");
-    let bottomText = document.createElement("p");
-    let curtain = document.createElement("div");
-
-    // Prep img
-    image.addEventListener("load", shrinkTextToFit); //is there a chance image could load BEFORE text is rendered at all? if so need to place this later...
+    image.addEventListener("load", generateMemePart2);
+    image.addEventListener("error", imageLoadError);
     let imageInput = document.querySelector("#image-url");
     let imageURL = imageInput.value;
     image.setAttribute("src", imageURL);
-    image.setAttribute("alt", "failed to load image");
+}
 
-    // Give top and bottom text p's their text and CSS
-    let topTextInput = document.querySelector("#top-text");
-    topText.innerText = topTextInput.value.toUpperCase();
-    topText.classList.add("top-text");
-    let bottomTextInput = document.querySelector("#bottom-text");
-    bottomText.innerText = bottomTextInput.value.toUpperCase();
-    bottomText.classList.add("bottom-text");
-
-    // Give CSS to text container and append top and bottom text to it
-    textContainer.classList.add("text-container");
-    textContainer.appendChild(topText);
-    textContainer.appendChild(bottomText);
-
-    // Give delete container CSS
-    curtain.classList.add("curtain");
-    curtain.setAttribute("data-toggle-visibility", "false");
-
-    // Give meme container CSS and event listener
-    memeContainer.classList.add("meme-container");
-    if(mqlHover.matches){
-        memeContainer.addEventListener("mouseover", mouseOverHandler);
-        memeContainer.addEventListener("mouseleave", mouseLeaveHandler);
+// Click-event -> Undefined
+// Procedure: 
+//   Option 1) Meme with curtain is clicked --> delete that meme
+//   Option 2) Anywhere else is clicked --> remove a curtain if it exists
+//     Option 2a) A meme without a curtain is clicked --> add curtain to that meme
+function memeClickHandler(e) {
+    let memeElement = e.target.closest(".meme-container");
+    if(memeElement && ownCurtainVisible(memeElement)) {
+        deleteMeme(memeElement);
     }
-
-
-    // Add children to meme container
-    memeContainer.appendChild(image);
-    memeContainer.appendChild(textContainer);
-    memeContainer.appendChild(curtain);
-
-    // Add meme to grid
-    memeGrid.appendChild(memeContainer);
-
-    // Reset form values
-    imageInput.value = null;
-    topTextInput.value = null;
-    bottomTextInput.value = null;
+    else {
+        removeCurtain();
+        if(memeElement){
+            addCurtain(memeElement);
+        }
+    }
 }
 
 // Event --> Undefined
@@ -149,6 +125,100 @@ function adjustMemeTextSize() {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // SECONDARY EVENT HANDLERS, SUB-1 HELPER FUNCTIONS
 
+function generateMemePart2(e) {
+    // Generate Containers
+    let memeContainer = document.createElement("button");
+    let textContainer = document.createElement("div");
+    let topText = document.createElement("p");
+    let bottomText = document.createElement("p");
+    let curtain = document.createElement("div");
+    let image = e.currentTarget;
+
+    // Give top and bottom text p's their text and CSS
+    let topTextInput = document.querySelector("#top-text");
+    topText.innerText = topTextInput.value.toUpperCase();
+    topText.classList.add("top-text");
+    let bottomTextInput = document.querySelector("#bottom-text");
+    bottomText.innerText = bottomTextInput.value.toUpperCase();
+    bottomText.classList.add("bottom-text");
+
+    // Give CSS to text container and append top and bottom text to it
+    textContainer.classList.add("text-container");
+    textContainer.appendChild(topText);
+    textContainer.appendChild(bottomText);
+
+    // Give curtain its CSS
+    curtain.classList.add("curtain");
+    curtain.setAttribute("data-toggle-visibility", "false");
+
+    // Give meme container CSS and event listener
+    memeContainer.classList.add("meme-container");
+    if(mqlHover.matches){
+        memeContainer.addEventListener("mouseover", mouseOverHandler);
+        memeContainer.addEventListener("mouseleave", mouseLeaveHandler);
+    }
+
+    // Add children to meme container
+    memeContainer.appendChild(image);
+    memeContainer.appendChild(textContainer);
+    memeContainer.appendChild(curtain);
+
+    // Add meme to grid
+    memeGrid.appendChild(memeContainer);
+
+    //Reset Form
+    removeFormValues();
+
+    //Now that image is loaded in original dimensions (within 100vw basically) and text rendered in initial max size, shrink text to fit within image dimensions
+    shrinkTextToFit(memeContainer);
+}
+
+function imageLoadError(e) {
+    // Create and Assign necessary elements
+    let memeContainer = document.createElement("button");
+    let textContainer = document.createElement("div");
+    let topText = document.createElement("p");
+    let bottomText = document.createElement("p");
+    let curtain = document.createElement("div");
+    let image = e.currentTarget;
+
+    // Give image element .load-error-box class
+    image.classList.add("load-error-box");
+
+    // Give top text p CSS and error text, bottom text just CSS...
+    topText.innerText = "IMAGE FAILED TO LOAD";
+    topText.classList.add("top-text");
+    topText.classList.add("load-error-text");
+    bottomText.classList.add("bottom-text");
+    bottomText.classList.add("load-error-text");
+
+    // Give CSS to text container and append top text to it
+    textContainer.classList.add("text-container");
+    textContainer.appendChild(topText);
+    textContainer.appendChild(bottomText);
+
+    // Give curtain its CSS
+    curtain.classList.add("curtain");
+    curtain.setAttribute("data-toggle-visibility", "false");
+
+    // Give meme container CSS and event listener
+    memeContainer.classList.add("meme-container");
+    if(mqlHover.matches){
+        memeContainer.addEventListener("mouseover", mouseOverHandler);
+        memeContainer.addEventListener("mouseleave", mouseLeaveHandler);
+    }
+
+    // Add children to meme container
+    memeContainer.appendChild(image);
+    memeContainer.appendChild(textContainer);
+    memeContainer.appendChild(curtain);
+
+    // Add meme to grid
+    memeGrid.appendChild(memeContainer);
+
+    // Reset Form
+    removeFormValues();
+}
 
 // Meme --> Undefined
 // Procedure - Recursive:
@@ -169,18 +239,10 @@ function growTextToFit(memeContainer){
     }
 }
 
-// Load-Event OR Meme  -> Undefined
+// Meme  -> Undefined
 // Procedure:
-//   Given either load event from a meme-image OR a meme-container itself, shrink the text to fit the computed size of the meme/image
-//   Decreases font-size of meme text to ensure it fits within the image dimensions
-function shrinkTextToFit(eventOrMeme){
-    let memeContainer;
-    if(eventOrMeme.currentTarget){ //check if input is an Event
-        let image = eventOrMeme.currentTarget;
-        memeContainer = image.parentElement;
-    } else { //assume input must be a memeContainer element
-        memeContainer = eventOrMeme;
-    }
+//   Decrease font-size of meme text to as necessary ensure it fits within the image dimensions
+function shrinkTextToFit(memeContainer){
     let styles = window.getComputedStyle(memeContainer);
     let originalFontSize = parseInt(styles.getPropertyValue("font-size"));
     shrinkTextToFitHelper(memeContainer, originalFontSize);     
@@ -209,24 +271,6 @@ function textFits(memeContainer) {
     return textHeight <= containerHeight;
 }
 
-// Click-event -> Undefined
-// Procedure: 
-//   Option 1) Meme with curtain is clicked --> delete that meme
-//   Option 2) Anywhere else is clicked --> remove a curtain if it exists
-//     Option 2a) A meme without a curtain is clicked --> add curtain to that meme
-function memeClickHandler(e) {
-    let memeElement = e.target.closest(".meme-container");
-    if(memeElement && ownCurtainVisible(memeElement)) {
-        deleteMeme(memeElement);
-    }
-    else {
-        removeCurtain();
-        if(memeElement){
-            addCurtain(memeElement);
-        }
-    }
-}
-
 function mouseOverHandler(e) {
     let memeElement = e.currentTarget;
     removeCurtain();
@@ -242,6 +286,14 @@ function mouseLeaveHandler(e) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // SUB-2 HELPER FUNCTIONS
 
+// Undefined --> Undefined
+// Procedure: remove any values in input elements on document
+function removeFormValues() {
+    let inputList = document.querySelectorAll("input");
+    for(let i = 0; i < inputList.length; i++){
+        inputList[i].value = null;
+    }
+}
 
 // Meme --> Boolean
 // Given a .meme-container element, is its .curtain child visible?
@@ -328,3 +380,78 @@ function addCurtain(memeElement){
 //         curtain.setAttribute("data-toggle-visibility","true");
 //     }
 // }
+
+
+
+
+
+////////////////////////////////////////////////////////////////
+
+// Originally didn't handle image load error, just had single generateMeme function --> 
+
+// function generateMeme(e){
+//     // Prevent form submission from reloading page
+//     e.preventDefault();
+
+//     // Generate Containers
+//     let memeContainer = document.createElement("button");
+//     let image = document.createElement("img");
+//     let textContainer = document.createElement("div");
+//     let topText = document.createElement("p");
+//     let bottomText = document.createElement("p");
+//     let curtain = document.createElement("div");
+
+//     // Prep img
+//     image.addEventListener("load", shrinkTextToFit); //is there a chance image could load BEFORE text is rendered at all? if so need to place this later...
+//     let imageInput = document.querySelector("#image-url");
+//     let imageURL = imageInput.value;
+//     image.setAttribute("src", imageURL);
+//     image.setAttribute("alt", "failed to load image");
+
+//     // Give top and bottom text p's their text and CSS
+//     let topTextInput = document.querySelector("#top-text");
+//     topText.innerText = topTextInput.value.toUpperCase();
+//     topText.classList.add("top-text");
+//     let bottomTextInput = document.querySelector("#bottom-text");
+//     bottomText.innerText = bottomTextInput.value.toUpperCase();
+//     bottomText.classList.add("bottom-text");
+
+//     // Give CSS to text container and append top and bottom text to it
+//     textContainer.classList.add("text-container");
+//     textContainer.appendChild(topText);
+//     textContainer.appendChild(bottomText);
+
+//     // Give delete container CSS
+//     curtain.classList.add("curtain");
+//     curtain.setAttribute("data-toggle-visibility", "false");
+
+//     // Give meme container CSS and event listener
+//     memeContainer.classList.add("meme-container");
+//     if(mqlHover.matches){
+//         memeContainer.addEventListener("mouseover", mouseOverHandler);
+//         memeContainer.addEventListener("mouseleave", mouseLeaveHandler);
+//     }
+
+
+//     // Add children to meme container
+//     memeContainer.appendChild(image);
+//     memeContainer.appendChild(textContainer);
+//     memeContainer.appendChild(curtain);
+
+//     // Add meme to grid
+//     memeGrid.appendChild(memeContainer);
+
+//     // Reset form values
+//     imageInput.value = null;
+//     topTextInput.value = null;
+//     bottomTextInput.value = null;
+// }
+
+
+//////////////
+// NOTE about when to reset form input values:
+
+// Could reset form values at end of generateMemePart1 instead of writing it at end of BOTH error / load pathways,
+//   but then generateMemePart2 can't access text input values because forms are reset before image loads and callback is called.
+//   Could grab text input values in beginning of generateMemePart1 and send them as extra parameters to generateMemePart2, but that dilutes 
+//   function purposes and clutters things in its own way as well... Text inputs are only necessary if image loads, not necessary for error pathway.
